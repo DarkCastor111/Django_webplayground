@@ -1,3 +1,5 @@
+# Environnement virtuel
+venv_Django_Playground/
 # Fichiers d'exécution
 __pycache__
 *.pyc
