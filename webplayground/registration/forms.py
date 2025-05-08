@@ -32,3 +32,17 @@ class PerfilUpdateFormCustom(forms.ModelForm):
 
         }
 
+class PerfilEmailForm(forms.ModelForm):
+
+    email = forms.EmailField(required=True, help_text="Requerido, y debe ser válido")
+
+    class Meta:
+        model = User
+        fields = ("email",)
+
+    def clean_email(self):
+        email_form = self.cleaned_data.get('email')
+        if 'email' in self.changed_data:
+            if User.objects.filter(email=email_form).exists():
+                raise forms.ValidationError("El email ya está registrado, prueba con otro.")
+        return email_form
