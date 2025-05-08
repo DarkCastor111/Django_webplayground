@@ -3,10 +3,15 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
+def custom_upload_to(instancia, nombre_fichero):
+    antigua_instancia = Profile.objects.get(pk=instancia.pk)
+    antigua_instancia.avatar.delete()
+    return 'profiles/' + nombre_fichero
+
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to="profiles", null=True, blank=True)
+    avatar = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
     link = models.URLField(null=True, blank=True)
 
