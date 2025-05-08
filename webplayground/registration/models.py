@@ -15,6 +15,9 @@ class Profile(models.Model):
     bio = models.TextField(null=True, blank=True)
     link = models.URLField(null=True, blank=True)
 
+    class Meta():
+        ordering = ['-user__pk']
+
 @receiver(post_save, sender=User)
 def asegurar_existencia_perfil(sender, instance, **kwargs):
     if kwargs.get('created', False):
