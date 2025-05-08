@@ -35,7 +35,7 @@ class PageListView(ListView):
 class PageDetailView(DetailView):
     model = Page
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(staff_member_required, name='dispatch') # (decorator, name='decorated method')
 class PageCreate(StaffNecesarioMixin, CreateView):
     # StaffNecesarioMixin : no utilisado si utilizamos el decorador
     model = Page
