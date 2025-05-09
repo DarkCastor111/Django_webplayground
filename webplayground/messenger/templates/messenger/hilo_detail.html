@@ -53,12 +53,60 @@
               {% for msg in object.mensajes.all %}
                 <!-- Dependiendo del usuario asignamos una clase con un color de fondo u otro en el mensaje -->
                 <div {% if request.user == msg.emisor %}class="msg-mine mb-3"{% else %}class="msg-other mb-3"{% endif %}>
-                  <small><i>Hace {{hilo.mensajes.last.fecha_emision|timesince}}</i></small><br>
+                  <small><i>Hace {{msg.fecha_emision|timesince}}</i></small><br>
                   {{msg.contenido}}
                 </div>
               {% endfor %}
             </div>
             <!-- Aquí crearemos el formulario -->
+             <textarea id="msj_contenido" class="form-control mt-2 mb-2" rows="2" placeholder="Su mensaje aquí"></textarea>
+             <button id="msj_boton" class="btn btn-primary btn-small btn-block" disabled>Enviar</button>
+             <script>
+              // Gestionar el envio del mensaje
+              var btn = document.getElementById('msj_boton');
+              btn.addEventListener("click", function(){
+                var ctnd = encodeURIComponent(document.getElementById('msj_contenido').value);
+                if (ctnd.length > 0) {
+                  //Vaciar el textarea y desactivar el boton
+                  afterEnviarMensaje();
+
+                  const url = "{% url 'messenger:hadd' hilo.pk %}" + "?contenido=" + ctnd;
+                  fetch(url).then(response => response.json()).then(function(data){
+                    if (data.creada){
+                      var msj = document.createElement('div');
+                      msj.classList.add('msg-mine', "mb-3");
+                      msj.innerHTML = '<small><i> Hace unos segundos</i></small><br>' + decodeURIComponent(ctnd)
+                      var hilo = document.getElementById('thread');
+                      hilo.appendChild(msj);
+                      scrollToUltimosMensajes();
+                    } else {
+                      console.log("Algo ha fallado en el envio del mensaje")
+                    }
+                  });
+                }
+              });
+              // Gestionar el disabled del msj_boton
+              var txt = document.getElementById('msj_contenido');
+              txt.addEventListener("keyup", function(){
+                if (this.checkValidity() && this.value.length > 0){
+                  btn.disabled = false;
+                } else {
+                  btn.disabled = true;
+                }
+              })
+              // Forzar el scroll hasta los últimos mensajes
+              function scrollToUltimosMensajes(){
+                var hilo = document.getElementById('thread');
+                hilo.scrollTop = hilo.scrollHeight;
+              }
+              // Vaciar el textArea y desactivar el boton
+              function afterEnviarMensaje(){
+                document.getElementById('msj_contenido').value='';
+                document.getElementById('msj_boton').disabled = true;
+              }
+              scrollToUltimosMensajes();
+
+             </script>
           </div>
         </div>
     </div>
