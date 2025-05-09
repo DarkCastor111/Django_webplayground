@@ -79,6 +79,10 @@
                       var hilo = document.getElementById('thread');
                       hilo.appendChild(msj);
                       scrollToUltimosMensajes();
+                      // En caso de ser el primero mensaje, actualizamos la página para que aparezca a la izquierda
+                      if (data.primero){
+                        window.location.href = "{% url 'messenger:hdetail' hilo.pk %}"
+                      }
                     } else {
                       console.log("Algo ha fallado en el envio del mensaje")
                     }

@@ -1,11 +1,14 @@
-from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
 
 from .models import Hilo, Mensaje
+from django.contrib.auth.models import User
 from django.http import Http404, JsonResponse
-from django.shortcuts import get_object_or_404
+
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -44,7 +47,16 @@ def anadir_mensaje(request, p_pk):
             mensaje = Mensaje.objects.create(emisor=request.user, contenido=cnt)
             hilo.mensajes.add(mensaje)
             json_respuesta["creada"] = True
+            if len(hilo.mensajes.all()) == 1:
+                json_respuesta["primero"] = True
     else:
         raise Http404("Usuario no identificado")
 
     return JsonResponse(json_respuesta)
+
+@login_required
+def iniciar_hilo(request, p_username):
+    emisor = request.user
+    receptor = get_object_or_404(User, username=p_username)
+    hilo = Hilo.objects.find_or_create(emisor,receptor)
+    return redirect(reverse_lazy('messenger:hdetail', args=[hilo.pk]))

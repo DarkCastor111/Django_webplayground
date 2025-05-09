@@ -31,10 +31,15 @@ class HiloManager(models.Manager):
 class Hilo(models.Model):
     users = models.ManyToManyField(User, related_name='hilos_activos')
     mensajes = models.ManyToManyField(Mensaje)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
     
     objects = HiloManager()
 
+    class Meta:
+        ordering = ['-fecha_modificacion']
+
 def mensajes_changed(sender, **kwargs):
+    # Impedir que un usuario externo añade un mensaje a un hilo
     instancia = kwargs.pop('instance', None)
     accion = kwargs.pop('action', None)
     pk_set = kwargs.pop('pk_set', None)
@@ -50,6 +55,8 @@ def mensajes_changed(sender, **kwargs):
     # Borrar los mensajes de false_pk_set de pk_set
     pk_set.difference_update(false_pk_set)
 
-
+    # Forzar la actualizacion del m2m
+    # Útil para actualizar la fecha_modificacion del Hilo
+    instancia.save()
 
 m2m_changed.connect(mensajes_changed, sender=Hilo.mensajes.through)
