@@ -22,4 +22,4 @@ class Profile(models.Model):
 def asegurar_existencia_perfil(sender, instance, **kwargs):
     if kwargs.get('created', False):
         Profile.objects.get_or_create(user=instance)
-        print("Creación Usuario y su Perfil enlazado")
+    #    print("Creación Usuario y su Perfil enlazado")
