@@ -47,6 +47,9 @@
               </li>
               {% else %}
               <li class="nav-item">
+                <a class="nav-link" href="{% url 'messenger:hlist' %}">Mensajes</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="{% url 'profile' %}">{{ request.user.username }}</a>
               </li>
               <li class="nav-item">
